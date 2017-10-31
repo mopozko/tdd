@@ -1,5 +1,8 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
+using FluentAssertions;
+using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
@@ -49,5 +52,36 @@ namespace TagsCloudVisualization
                     new Rectangle(9, 11, 2, 2),
                 });
         }
+
+        [Test, Timeout(1000)]
+        public void AddALotOfRectangles()
+        {
+            var size = new Size(1,1);
+            for (var i = 0; i < 100; i++)
+                cloudLayouter.PutNextRectangle(size);
+        }
+
+        [TestCase(0, 1, TestName = "ZeroWidth")]
+        [TestCase(-1, 1, TestName = "NegativeWidth")]
+        [TestCase(1, 0, TestName = "ZeroHeight")]
+        [TestCase(1, -1, TestName = "NegativeHeight")]
+
+        public void PutNextRectangle_Throw_WhenIncorrectSize(int width, int height)
+        {
+            new Action(() => cloudLayouter.PutNextRectangle(new Size(width, height))).Should()
+                .ThrowExactly<ArgumentException>();
+        }
+
+        [Test]
+        public void DoSomething_WhenSomething()
+        {
+            var resultRectangles = Enumerable.Range(0, 100).Select(x => cloudLayouter.PutNextRectangle(new Size(2, 2))).ToArray();
+            resultRectangles.Should().HaveCount(100);
+            resultRectangles.Where(rectangle => resultRectangles
+                .Any(x => x != rectangle && x.IntersectsWith(rectangle)))
+                .Should()
+                .HaveCount(0);
+        }
+
     }
 }
