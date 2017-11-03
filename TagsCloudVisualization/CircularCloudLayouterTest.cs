@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+
 
 namespace TagsCloudVisualization
 {
@@ -10,53 +13,78 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouterTest
     {
         private CircularCloudLayouter cloudLayouter;
+        private Point center;
         [SetUp]
         public void Initialization()
         {
-            cloudLayouter = new CircularCloudLayouter(new Point(10, 10));
+            center = new Point(10,10);
+            cloudLayouter = new CircularCloudLayouter(center);
         }
 
         [Test]
         public void PutNextRectangle_GetFirstRectange()
         {
-            cloudLayouter.PutNextRectangle(new Size(4, 4)).Should().Be(new Rectangle(8, 8, 4, 4));
+            cloudLayouter.PutNextRectangle(new Size(4, 4))
+                .Should()
+                .Be(new Rectangle(8, 8, 4, 4));
         }
 
         [Test]
-        public void PutNextRectangle_After5IdenticalRectangles()
+        public void PutNextRectangle_AllRectanglesFormACircle_After100IdenticalRectangles()
         {
-            Enumerable.Range(0, 5).Select(x => cloudLayouter.PutNextRectangle(new Size(2, 2)))
-                .Should().BeEquivalentTo(new[]
-                {
-                    new Rectangle(9, 9, 2, 2),
-                    new Rectangle(9, 7, 2, 2),
-                    new Rectangle(9, 11, 2, 2),
-                    new Rectangle(7, 9, 2, 2),
-                    new Rectangle(11, 9, 2, 2),
-                });
-        }
+            var allRectangles = new List<Rectangle>();
 
+            for (var i = 0; i < 100; i++)
+            {
+                var rect = cloudLayouter.PutNextRectangle(new Size(10,10));
+                allRectangles.Add(rect);
+            }
+            PutNextRectangle_AllRectanglesFormACircle(allRectangles);
+        }
         [Test]
-        public void PutNextRectangle_After()
+        public void PutNextRectangle_AllRectanglesFormACircle_After100RectanglesWithARandomSize()
         {
-            new[]
-                {
-                    new Size(4, 2),
-                    new Size(2, 2),
-                    new Size(2, 2),
-                }.Select(x => cloudLayouter.PutNextRectangle(x))
-                .Should().BeEquivalentTo(new[]
-                {
-                    new Rectangle(8, 9, 4, 2),
-                    new Rectangle(9, 7, 2, 2),
-                    new Rectangle(9, 11, 2, 2),
-                });
+            var allRectangles = new List<Rectangle>();
+            var rnd = new Random();
+            for (var i = 0; i < 100; i++)
+            {
+                var rect = cloudLayouter.PutNextRectangle(new Size(rnd.Next(10,30),rnd.Next(10,30)));
+                allRectangles.Add(rect);
+            }
+            PutNextRectangle_AllRectanglesFormACircle(allRectangles);
         }
+        [Test]
+        public void PutNextRectangle_AllRectanglesFormACircle_After50LargeAnd50SmallRectangles()
+        {
+            var allRectangles = new List<Rectangle>();
 
+            for (var i = 0; i < 50; i++)
+            {
+                var rect = cloudLayouter.PutNextRectangle(new Size(50, 50));
+                allRectangles.Add(rect);
+            }
+            for (var i = 0; i < 50; i++)
+            {
+                var rect = cloudLayouter.PutNextRectangle(new Size(10, 10));
+                allRectangles.Add(rect);
+            }
+            PutNextRectangle_AllRectanglesFormACircle(allRectangles);
+        }
+        [Test]
+        public void PutNextRectangle_AllRectanglesDoNotIntersect()
+        {
+            var resultRectangles = Enumerable.Range(0, 100).Select(x => cloudLayouter.PutNextRectangle(new Size(2, 2))).ToArray();
+            resultRectangles.Should().HaveCount(100);
+            resultRectangles.Where(rectangle => resultRectangles
+                    .Any(x => x != rectangle && x.IntersectsWith(rectangle)))
+                .Should()
+                .HaveCount(0);
+        }
+        
         [Test, Timeout(1000)]
-        public void AddALotOfRectangles()
+        public void AddALotOfRectangles_TimeoutTest()
         {
-            var size = new Size(1,1);
+            var size = new Size(4,4);
             for (var i = 0; i < 100; i++)
                 cloudLayouter.PutNextRectangle(size);
         }
@@ -72,16 +100,33 @@ namespace TagsCloudVisualization
                 .ThrowExactly<ArgumentException>();
         }
 
-        [Test]
-        public void DoSomething_WhenSomething()
+        private void PutNextRectangle_AllRectanglesFormACircle(List<Rectangle> allRectangles)
         {
-            var resultRectangles = Enumerable.Range(0, 100).Select(x => cloudLayouter.PutNextRectangle(new Size(2, 2))).ToArray();
-            resultRectangles.Should().HaveCount(100);
-            resultRectangles.Where(rectangle => resultRectangles
-                .Any(x => x != rectangle && x.IntersectsWith(rectangle)))
+            var totalArea = allRectangles.Select(x => x.Width * x.Height).Sum();
+
+            var currentCircularRadius = 1.2 * Math.Sqrt(totalArea / Math.PI);
+
+            allRectangles.Select(ToBorderPoints).SelectMany(x => x).Distinct()
+                .Select(x => new Point(center.X - x.X, center.Y - x.Y))
+                .Where(x => x.X * x.X + x.Y * x.Y > currentCircularRadius * currentCircularRadius)
                 .Should()
                 .HaveCount(0);
         }
 
+        public static IEnumerable<Point> ToBorderPoints(Rectangle rect)
+        {
+            var x = rect.Location.X;
+            var y = rect.Location.Y;
+            var w = rect.Width;
+            var h = rect.Height;
+            return new[]
+            {
+                new Point(x,y),
+                new Point(x + w, y + h),
+                new Point(x + w, y),
+                new Point(x, y + h),
+            };
+        }
     }
+
 }
