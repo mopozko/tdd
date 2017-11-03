@@ -7,9 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{1CC85141-9E7B-40A2-8384-8319A219627D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{388D5D2F-EC2E-47F9-842D-082171C55F2E}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -23,15 +26,18 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1CC85141-9E7B-40A2-8384-8319A219627D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1CC85141-9E7B-40A2-8384-8319A219627D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1CC85141-9E7B-40A2-8384-8319A219627D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1CC85141-9E7B-40A2-8384-8319A219627D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{388D5D2F-EC2E-47F9-842D-082171C55F2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{388D5D2F-EC2E-47F9-842D-082171C55F2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{388D5D2F-EC2E-47F9-842D-082171C55F2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{388D5D2F-EC2E-47F9-842D-082171C55F2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC6979C5-82AB-4CE4-85EC-73912D53FBA9}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
